@@ -1,154 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finance Ultra</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-body {
-  font-family: -apple-system, sans-serif;
-  background: #020617;
-  color: white;
-  padding: 16px;
-  max-width: 750px;
-  margin: auto;
-}
-h1 { text-align:center; margin-bottom: 20px; }
-.card { background:#0f172a; padding:16px; border-radius:16px; margin-bottom:14px; }
-input, select { width:100%; padding:10px; margin-top:6px; border-radius:10px; border:none; }
-button { width:100%; padding:12px; margin-top:8px; border-radius:12px; border:none; font-weight:bold; background:#22c55e; }
-.stat { margin:4px 0; font-weight:bold; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Ultra Pro Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>💎 Finance Ultra</h1>
-
-<div class="card">
-<h3>Add Income</h3>
-<input id="income" placeholder="Monthly Income">
-<button onclick="addIncome()">Add</button>
-</div>
-
-<div class="card">
-<h3>Add Expense</h3>
-<input id="expenseAmt" placeholder="Amount">
-<select id="expenseCat">
-<option>Housing</option>
-<option>Food</option>
-<option>Car</option>
-<option>Bills</option>
-<option>Fun</option>
-<option>Other</option>
-</select>
-<button onclick="addExpense()">Add</button>
-</div>
-
-<div class="card">
-<h3>Add Debt</h3>
-<input id="debtName" placeholder="Name">
-<input id="debtBal" placeholder="Balance">
-<button onclick="addDebt()">Add</button>
-</div>
-
-<div class="card">
-<h3>Savings Goal</h3>
-<input id="goal" placeholder="Goal amount">
-<button onclick="setGoal()">Save</button>
-</div>
-
-<div class="card">
-<h3>Dashboard</h3>
-<div id="stats"></div>
-<canvas id="expenseChart"></canvas>
-</div>
-
-<script>
-let db = JSON.parse(localStorage.getItem("financeUltra")) || {
-  income: [],
-  expenses: [],
-  debts: [],
-  goal: 0
-};
-
-function save(){
-  localStorage.setItem("financeUltra", JSON.stringify(db));
-  render();
-}
-
-function addIncome(){
-  let val = Number(document.getElementById("income").value);
-  if(!val) return;
-  db.income.push(val);
-  document.getElementById("income").value="";
-  save();
-}
-
-function addExpense(){
-  let amt = Number(document.getElementById("expenseAmt").value);
-  let cat = document.getElementById("expenseCat").value;
-  if(!amt) return;
-  db.expenses.push({amt,cat});
-  document.getElementById("expenseAmt").value="";
-  save();
-}
-
-function addDebt(){
-  let name = document.getElementById("debtName").value;
-  let bal = Number(document.getElementById("debtBal").value);
-  if(!name || !bal) return;
-  db.debts.push({name,bal});
-  document.getElementById("debtName").value="";
-  document.getElementById("debtBal").value="";
-  save();
-}
-
-function setGoal(){
-  db.goal = Number(document.getElementById("goal").value);
-  save();
-}
-
-function render(){
-  const incomeTotal = db.income.reduce((a,b)=>a+b,0);
-  const expensesTotal = db.expenses.reduce((a,b)=>a+b.amt,0);
-  const debtTotal = db.debts.reduce((a,b)=>a+b.bal,0);
-  const leftover = incomeTotal - expensesTotal;
-  const yearly = leftover * 12;
-  const netWorth = incomeTotal - debtTotal;
-
-  let statsHtml = `
-    <div class="stat">Income: $${incomeTotal.toFixed(2)}</div>
-    <div class="stat">Expenses: $${expensesTotal.toFixed(2)}</div>
-    <div class="stat">Leftover: $${leftover.toFixed(2)}</div>
-    <div class="stat">Debt: $${debtTotal.toFixed(2)}</div>
-    <div class="stat">Net Worth: $${netWorth.toFixed(2)}</div>
-    <div class="stat">1-Year Projection: $${yearly.toFixed(2)}</div>
-  `;
-
-  if(db.goal){
-    const needed = db.goal/12;
-    statsHtml += `<div class="stat">Goal Monthly Needed: $${needed.toFixed(2)}</div>`;
-    statsHtml += leftover >= needed ? 
-      `<div class="stat" style="color:#22c55e">✅ On track for goal</div>` :
-      `<div class="stat" style="color:#f59e0b">⚠️ Not on track</div>`;
-  }
-
-  document.getElementById("stats").innerHTML = statsHtml;
-
-  // Expense Pie Chart
-  const ctx = document.getElementById("expenseChart").getContext('2d');
-  const categories = {};
-  db.expenses.forEach(e => categories[e.cat] = (categories[e.cat]||0)+e.amt);
-  if(window.expenseChart) window.expenseChart.destroy();
-  window.expenseChart = new Chart(ctx, {
-    type:'pie',
-    data:{
-      labels:Object.keys(categories),
-      datasets:[{data:Object.values(categories)}]
-    }
-  });
-}
-
-render();
-</script>
+    <div class="sidebar">
+        <h2>Finance Ultra Pro</h2>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Reports</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="main-content">
+        <header>
+            <h1>Dashboard</h1>
+        </header>
+        <section class="stat-cards">
+            <div class="card positive">
+                <h3>Total Income</h3>
+                <p>$10,000</p>
+            </div>
+            <div class="card negative">
+                <h3>Total Expenses</h3>
+                <p>$7,000</p>
+            </div>
+            <div class="card neutral">
+                <h3>Net Worth</h3>
+                <p>$3,000</p>
+            </div>
+        </section>
+        <section class="charts">
+            <div class="chart">
+                <h3>Spending Breakdown</h3>
+                <canvas id="spendingChart"></canvas>
+            </div>
+            <div class="chart">
+                <h3>Cash Flow</h3>
+                <canvas id="cashFlowChart"></canvas>
+            </div>
+        </section>
+        <section class="debt-snowball">
+            <h3>Debt Snowball Table</h3>
+            <table>
+                <tr>
+                    <th>Debt Name</th>
+                    <th>Amount</th>
+                    <th>Minimum Payment</th>
+                    <th>Due Date</th>
+                </tr>
+                <tr>
+                    <td>Credit Card 1</td>
+                    <td>$2,000</td>
+                    <td>$100</td>
+                    <td>2026-03-01</td>
+                </tr>
+                <tr>
+                    <td>Loan</td>
+                    <td>$5,000</td>
+                    <td>$200</td>
+                    <td>2026-04-05</td>
+                </tr>
+            </table>
+        </section>
+        <section class="savings-goal">
+            <h3>Savings Goal Tracker</h3>
+            <p>Goal: $5,000 | Current Savings: $1,500</p>
+        </section>
+        <section class="ai-coach">
+            <h3>AI Money Coach Recommendations</h3>
+            <ul>
+                <li>Cut down on dining out to save more.</li>
+                <li>Consider refinancing your loans for a lower rate.</li>
+            </ul>
+        </section>
+        <section class="inputs">
+            <h3>Add Your Financial Data</h3>
+            <form>
+                <label for="income">Income:</label>
+                <input type="text" id="income" name="income">
+                <label for="expenses">Expenses:</label>
+                <input type="text" id="expenses" name="expenses">
+                <label for="bills">Bills:</label>
+                <input type="text" id="bills" name="bills">
+                <label for="debt">Debt:</label>
+                <input type="text" id="debt" name="debt">
+                <button type="submit">Add</button>
+            </form>
+        </section>
+    </div>
+<script src="scripts.js"></script>
 </body>
 </html>
